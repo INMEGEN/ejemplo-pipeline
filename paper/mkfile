@@ -1,0 +1,11 @@
+%.pdf:	%.tex
+	# compilar 3 veces, porque latex
+	latex $prereq \
+	|| true
+	latex $prereq \
+	|| true
+	latex $prereq \
+	|| true
+
+clean:
+	rm reporte.{dvi,out,log,aux}

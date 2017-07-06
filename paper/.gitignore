@@ -1,0 +1,6 @@
+# archivos temporales de latex
+*.log
+*.aux
+*.dvi
+*.out
+*.pdf
