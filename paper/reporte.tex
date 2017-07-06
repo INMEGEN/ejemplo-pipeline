@@ -1,0 +1,93 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,mexico]{babel}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{amsmath,amsthm,amsfonts}
+\usepackage{braket}
+\usepackage[ruled,vlined]{algorithm2e}
+
+\title{\textbf{Recuerdo de mi taller de supercómputo}}
+\author{} 
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Si este documento tiene gráficas de densidad de valores de información mutua,
+y no tiene faltas de ortografía, lo lograste.
+
+Completa en \verb+ \author{} \verb+ para tener tu nombre en tu recuerdo.
+\end{abstract}
+
+\includegraphics[width=0.85\linewidth]{../analysis/002/results/whole_img1.sif_plot.pdf}
+\includegraphics[width=0.85\linewidth]{../analysis/002/results/whole_img2.sif_plot.pdf}
+
+A continuación mucho rollo:
+
+\section{Metodología}
+
+\subsection{Construcción de red transcripcional}
+
+Previamente el nuestro grupo se subtipificaron en estas cuatro categorías principales 493 muestras de tejido de cáncer de mama \cite{AndaJauregui2015} y posteriormente usando el algoritmo \emph{ARACNE} \cite{Margolin2006} se infirieron estadísticamente redes de regulación genética de estas muestras \cite{AndaJauregui2016}.
+
+Partiendo de estas redes de regulación se aplico la metodología propuesta en el proyecto de doctorado \cite{Alcala2016} para encontrar módulos biológicamente funcionales. Lo anterior se realizó mediante la partición de las redes en comunidades y el análisis de enriquecimiento de las mismas (ver figura \ref{fig:pipeline}).
+
+\subsection{Detección de comunidades}
+
+La detección de módulos en la red, es decir la partición de la misma en \emph{comunidades}, se realizó usando el algoritmo \emph{Infomap} \cite{Rosvall2008}, el cual usa la información codificada en una \emph{caminata aleatoria} en la red para describir estructuras en la red como si fuera un mapa; minimizando dicha descripción se obtienen una partición óptima de la red y por lo tanto los módulos. \emph{Infomap} ha mostrado ser de los mejores algoritmos de detección de comunidades tanto en rendimiento como en eficiencia \cite{lancichinetti2009} en términos de la prueba LFR \cite{Lancichinetti2008}.
+
+\subsection{Enriquecimiento y Análisis Funcional}
+
+Una vez que se han obtenido los módulos de la red, se puede verificar si estas listas de genes están asociados a una función biológica particular. Lo anterior se logra realizando una prueba hipergeométrica sobre un conjunto de genes cuya función es conocida o esta anotada en alguna base de datos. Para esto, se pueden usar bases de datos como las contenidas en la \emph{Kyoto Encyclopedia of Genes and Genomes} (\textbf{KEEG}) o el \emph{Gene Ontology Consortium} (\textbf{GO}).
+
+Para determinar si una lista de genes está o no asociada a una función biológica, se puede evaluar la \emph{signficancia estadística} de que dicho conjunto de genes estén anotados en alguna función (proceso) biológica particular de alguna base de datos, \emph{i.e.}, que tan probable es que los genes de la lista pertenezcan a una de las categorías (funciones biológicas) anotadas en dicha bases de datos. Esta significancia estadística se obtiene al calcular la probabilidad de que un conjunto de igual tamaño de genes elegidos aleatoriamente resulten anotados en dicha función o proceso biológico (\emph{hipótesis nula}). Esto probabilidad corresponde a un \emph{modelo de urna} y viene dada mediante una distribución hipergeométrica:
+
+\begin{equation*}
+  P(k) = \dfrac{\dbinom{K}{k} \dbinom{N-K}{n-k}}{\dbinom{N}{n}}
+\end{equation*}
+
+en donde $N$ es el tamaño del genoma (o conjunto total de genes), $K$ es el número de genes anotados en la función biológica en la base de datos, $n$ es el tamaño de nuestra lista de genes a probar (para este caso, cada comunidad) y $k$ es el número esperado de genes a probar en dicha categoría. Esta probabilidad representa para este caso un \emph{p-value} ($p_v$) dado que negamos la hipotesis nula, así entonces entre menor sea el $p_v$ menor es la probabilidad de que un conjunto de genes \textbf{al azar} pertenezcan a la categoría y por lo tanto representa un confianza estadística sobre el conjunto de genes que estamos probando.
+
+\begin{gather*}
+  p_v = P({X \geq k}) \\
+  \nabla \cdot \vec{E} =  \dfrac{\rho}{\varepsilon_0} \\
+  \nabla \cdot \vec{B} = 0 \\
+  \nabla \times \vec{E} = -\dot{\vec{B}} \\
+  \nabla \times \vec{B} = \mu_0 \vec{J} + \mu_0 \varepsilon_0 \dot{\vec{E}} \\
+\end{gather*}
+
+A este análisis se le conoce comúnmente en la literatura de bioinformática y biología de sistemas como \textbf{enriquecimiento funcional} \cite{GSEA2005,CristobalFresno2012}.
+
+En nuestro caso, para decir que un proceso está \emph{enriquecido} impusimos la restricción de una significancia estadística tal que $p_v < 1x10^{-2}$, en otro caso consideramos que nuestra lista de genes no está enriquecida \emph{i.e}. no está estadísticamente asociada a algún proceso biológico.
+
+\begin{figure}[!h]
+\centering
+\caption{{\textbf{Metodología}. Se parte de 493 muestras de cáncer de mama clasificadas en subtipos via el algoritmo PAM50 \cite{Parker2009}. Para cada uno de los subtipo se infirieron redes transcripcionales a partir de calcular la información mutua entre los niveles de expresión de cada muestras vía el algoritmo ARACNE \cite{Margolin2006}. Así entonces se identificaron comunidades en dichas redes mediante el método Infomap \cite{Rosvall2008}, representadas con colores diferentes. Finalmente se enriquecieron dichas comunidades en procesos biológicos de Gene Ontology para finalmente analizarlas.}
+\label{fig:pipeline}
+\end{figure}
+
+\section{Resultados}
+
+El trabajo se ha plasmado en un manuscrito que se encuentra en vías de ser enviado a la revista \emph{Frontiers in Systems Biology}\footnote{se anexa el borrador}.
+
+En general en los resultados obtenidos se observa que para cada subtipo molecular de cáncer de mama, las redes asociadas se separan en comunidades únicas a dichos subtipos. Asimismo, la estructura de comunidades de cada red es particular y varias categorías de \emph{Gene Ontology} enriquecieron (se asociaron estadísticamente) de manera diferente para cada subtipo, captando la esencia cada fenotipo.
+
+En particular, se analizó la estructura modular del subtipo basal (el más agresivo y de pronóstico más pobre), donde los procesos relacionados a sistema inmune enriquecieron a la mayoría de las comunidades y varios procesos diferentes enriquecieron de manera única en la comunidad asociada a PSMB9, en particular procesos ligados a \emph{apoptosis} (ver figura \ref{Basal_Procesos-Comunidades}).
+
+\begin{figure}[!t]
+\centering
+%\includegraphics[width=1.0\linewidth]{Basal_Procesos_A_Comunidades2.pdf}
+\caption{\texbf{Procesos de Gene Ontology asociados a las comunidades detectadas en la red del subtipo BASAL.}}
+\label{Basal_Procesos-Comunidades}
+\end{figure}
+
+\section{Conclusiones}
+
+En general, podemos establecer que grupos de genes detectados a partir de \emph{propiedades topológicas de gran escala} en redes transcripcionales, inferidas a partir de datos de expresión, mapean funcionalmente a procesos biológicos particulares (módulos transcripcionales funcionales) en los cuatro subtipos moleculares de cáncer de mama.
+
+El hecho de que en el \emph{subtipo Basal} la comunidad asociada a PSMB9, este enriquecida en procesos ligados a \emph{apoptosis} podría tener una implicaciones biomédicas, dado que se pueden dirigir terapias hacia las vías relacionadas a este proceso.
+
+\end{document}
