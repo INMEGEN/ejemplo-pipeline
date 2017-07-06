@@ -19,7 +19,7 @@ y la generación del SIF localmente en castillo.
 cd analysis/001
 condor submit
 # al terminar, generar el SIF
-bin/targets-sif | xargs mk
+bin/target-sif | xargs mk
 ```
 
 El módulo de `analysis/002` es el que recién solicitó el revisor 2.
