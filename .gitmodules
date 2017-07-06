@@ -1,0 +1,3 @@
+[submodule "analysis/001"]
+	path = analysis/001
+	url = https://github.com/CSB-IG/parallel-aracne.git
